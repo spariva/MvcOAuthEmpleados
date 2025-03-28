@@ -27,7 +27,7 @@ namespace MvcOAuthEmpleados.Controllers
             HttpContext.User.FindFirst(x => x.Type == "Token");
             Empleado empleado = await this.service.FindEmpleadoAsync(id);
 
-            return View(empleado);  
+            return View(empleado);
             //string token = HttpContext.Session.GetString("Token");
             //if(token == null)
             //{
@@ -40,5 +40,20 @@ namespace MvcOAuthEmpleados.Controllers
             //    return View(empleado);
             //}
         }
+
+        [AuthorizeEmpleados]
+        public async Task<IActionResult> Perfil()
+        {
+            Empleado empleado = await this.service.GetPerfilAsync();
+            return View(empleado);
+        }
+
+        [AuthorizeEmpleados]
+        public async Task<IActionResult> Compis()
+        {
+            List<Empleado> empleados = await this.service.GetCompisAsync();
+            return View(empleados);
+        }
+
     }
 }
