@@ -133,5 +133,51 @@ namespace MvcOAuthEmpleados.Services
         }
 
 
-    }
+        public async Task<List<string>> GetOficiosAsync()
+        {
+            string request = "api/empleados/oficios";
+            return await this.CallApiAsync<List<string>>(request);  
+        }
+
+
+
+        private string TransformCollectionToQuery(List<string> collection) 
+        { 
+            string result = "?";
+            foreach(string item in collection)
+            {
+                result += "oficios=" + item + "&";
+            }
+            result = result.TrimEnd('&');
+            return result;
+        }
+
+        public async Task<List<Empleado>> GetEmpleadosOficioAsync(List<string> oficios)
+        {
+            string request = "api/empleados/empleadosoficio";
+            string data = this.TransformCollectionToQuery(oficios);
+            List<Empleado> empleados = await this.CallApiAsync<List<Empleado>>(request + data);
+            return empleados;
+        }
+
+        public async Task UpdateEmpleadosOficiosAsync(int incremento, List<string> oficios)
+        {
+            string request = "api/empleados/incrementarsalarios/" + incremento;
+            string data = this.TransformCollectionToQuery(oficios);
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(this.UrlApi);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.Header);
+                //string token = this.httpContextAccessor.HttpContext.User.FindFirst(z => z.Type == "Token").Value;
+                //client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                HttpResponseMessage response = await client.PutAsync(request + data, null);
+            }
+        }
+
+
+
+
+        }
 }
